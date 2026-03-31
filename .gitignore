@@ -1,0 +1,12 @@
+# Игнорировать библиотеку SFML
+sfml/
+*.lib
+*.a
+*.dll
+*.so
+*.dylib
+
+# Файлы сборки CLion
+cmake-build-debug/
+*.iml
+.idea/
