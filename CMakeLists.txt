@@ -16,7 +16,23 @@ include_directories("${CMAKE_SOURCE_DIR}/sfml/include")
 find_package(SFML 2.6 COMPONENTS system window graphics REQUIRED)
 
 # Добавляем исполняемый файл
-add_executable(Lunar_base main.cpp)
+add_executable(Lunar_base main.cpp
+        src/core/Game.cpp
+        src/core/Game.h
+        src/ui/TopPanel.cpp
+        src/ui/TopPanel.h
+        src/ui/Button.h
+        src/ui/Button.cpp
+        src/screens/IScreen.cpp
+        src/screens/IScreen.h
+        src/screens/Locationscreen.cpp
+        src/screens/Locationscreen.h
+        src/screens/StructureScreen.cpp
+        src/screens/StructureScreen.h
+        src/screens/MainMenuScreen.cpp
+        src/screens/MainMenuScreen.h
+        src/screens/MaterialScreen.cpp
+        src/screens/MaterialScreen.h)
 
 # Линкуем библиотеки SFML
 target_link_libraries(Lunar_base
