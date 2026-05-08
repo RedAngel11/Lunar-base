@@ -1,5 +1,5 @@
 #include <iostream>
-#include "src/core/Game.h" // Подключаем только заголовок игры
+#include "src/core/Game.h" 
 #ifdef _WIN32
 #include <windows.h>
 #endif

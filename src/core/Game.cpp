@@ -3,9 +3,11 @@
 #include "../screens/StructureScreen.h"
 #include "../screens/MaterialScreen.h"
 #include "../screens/MainMenuScreen.h"
+#include "../screens/SummaryScreen.h"
+#include "../ui/SelectionButton.h"
 #include <stdexcept>
-//#include <iostream>
-//#include <filesystem>
+#include <iostream>
+#include <filesystem>
 
 
 
@@ -19,20 +21,29 @@ void Game::loadResources() {
         throw std::runtime_error("Failed to load font!");
 }
 
-// 🔑 Фабрика экранов конструктора
 void Game::switchBuilderScreen(Tab tab) {
     switch (tab) {
-        case Tab::Location:
-            currentScreen = std::make_unique<LocationScreen>(font);
+        case Tab::Location: {
+            auto screen = std::make_unique<LocationScreen>(font, "resources/moon_map.jpg");
+            screen->setOnSelectCallback([this](const LocationInfo& info) {
+                sharedData.selectedLocation = info;
+                std::cout << "✓ Локация сохранена: " << info.name << "\n";
+            });
+            currentScreen = std::move(screen);
             break;
-        case Tab::Structure:
-            currentScreen = std::make_unique<StructureScreen>(font);
+        }
+        case Tab::Structure: {
+            auto screen = std::make_unique<StructureScreen>(font);
+            screen->setOnSelectCallback([this](StructureType type) {
+                sharedData.selectedStructure = type;
+                std::cout << "✓ Структура сохранена: тип #" << static_cast<int>(type) << "\n";
+            });
+            currentScreen = std::move(screen);
             break;
+        }
         case Tab::Material:
-            currentScreen = std::make_unique<MaterialScreen>(font);
-            break;
         case Tab::Summary:
-            currentScreen = nullptr; // Пока заглушка для итогов
+            // Заглушки, пока не создашь экраны
             break;
     }
 }

@@ -32,7 +32,13 @@ add_executable(Lunar_base main.cpp
         src/screens/MainMenuScreen.cpp
         src/screens/MainMenuScreen.h
         src/screens/MaterialScreen.cpp
-        src/screens/MaterialScreen.h)
+        src/screens/MaterialScreen.h
+        src/core/SelectionData.h
+        src/ui/Hotspot.h
+        src/ui/Hotspot.cpp
+        src/ui/SelectionButton.h
+        src/screens/SummaryScreen.h
+        src/screens/SummaryScreen.cpp)
 
 # Линкуем библиотеки SFML
 target_link_libraries(Lunar_base

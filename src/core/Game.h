@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include "../ui/TopPanel.h"
 #include "../screens/IScreen.h"
+#include "SelectionData.h"
+#include "../screens/SummaryScreen.h"
 #include <memory>
 
 enum class ScreenType { MainMenu, Builder };
@@ -17,6 +19,8 @@ class Game {
 
     void switchBuilderScreen(Tab tab); // Новый метод
     void loadResources();
+    SelectionData sharedData; // Единое хранилище выбора
+    void updateSummaryText(); // Обновить текст в SummaryScreen
 
 public:
     Game();
