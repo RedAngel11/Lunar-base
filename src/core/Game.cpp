@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <iostream>
 #include <filesystem>
+#include "../core/BaseCalculator.h"
+#include "../screens/ResultsScreen.h"
 
 Game::Game() : window(sf::VideoMode(800, 600), "Lunar Base Simulator") {
     loadResources();
@@ -19,13 +21,15 @@ void Game::loadResources() {
         throw std::runtime_error("Failed to load font!");
 }
 
+
 void Game::switchBuilderScreen(Tab tab) {
+    std::cout << "🔄 Переключение на вкладку: " << static_cast<int>(tab) << "\n";
+
     switch (tab) {
         case Tab::Location: {
             auto screen = std::make_unique<LocationScreen>(font, "resources/moon_map.jpg");
             screen->setOnSelectCallback([this](const LocationInfo& info) {
                 sharedData.selectedLocation = info;
-                std::cout << "✓ Локация сохранена: " << info.name << "\n";
             });
             currentScreen = std::move(screen);
             break;
@@ -34,36 +38,31 @@ void Game::switchBuilderScreen(Tab tab) {
             auto screen = std::make_unique<StructureScreen>(font);
             screen->setOnSelectCallback([this](StructureType type) {
                 sharedData.selectedStructure = type;
-                std::cout << "✓ Структура сохранена: тип #" << static_cast<int>(type) << "\n";
             });
             currentScreen = std::move(screen);
             break;
         }
-        case Tab::Material: {  // 🔑 НОВОЕ: создаём экран материалов
+        case Tab::Material: {
             auto screen = std::make_unique<MaterialScreen>(font);
             screen->setOnSelectCallback([this](MaterialType type) {
-                // Добавляем/удаляем материал из списка (можно сделать тоггл)
-                auto it = std::find(sharedData.selectedMaterials.begin(),
-                                   sharedData.selectedMaterials.end(), type);
-                if (it != sharedData.selectedMaterials.end()) {
-                    sharedData.selectedMaterials.erase(it);
-                } else {
-                    sharedData.selectedMaterials.push_back(type);
-                }
-                std::cout << "✓ Материал обновлён, всего выбрано: "
-                          << sharedData.selectedMaterials.size() << "\n";
+                auto it = std::find(sharedData.selectedMaterials.begin(), sharedData.selectedMaterials.end(), type);
+                if (it != sharedData.selectedMaterials.end()) sharedData.selectedMaterials.erase(it);
+                else sharedData.selectedMaterials.push_back(type);
             });
             currentScreen = std::move(screen);
             break;
         }
-        case Tab::Summary: {  // 🔑 НОВОЕ: создаём экран итогов
+        case Tab::Summary: {
             auto screen = std::make_unique<SummaryScreen>(font, sharedData);
             screen->setOnCalculateCallback([this]() {
-                if (sharedData.isReady()) {
-                    std::cout << "🎯 Все данные собраны! Запускаем BaseCalculator...\n";
-                    // Здесь будет вызов BaseCalculator::calculate(sharedData)
-                } else {
-                    std::cout << "⚠️ Заполните все вкладки перед расчётом!\n";
+                try {
+                    CalculationReport report = BaseCalculator::calculate(sharedData);
+                    auto results = std::make_unique<ResultsScreen>(font, report);
+                    results->setOnBackCallback([this]() { switchScreen(ScreenType::Builder); });
+                    currentScreen = std::move(results);
+                    topPanel = nullptr; // Скрываем панель на экране результатов
+                } catch (const std::exception& e) {
+                    std::cerr << "⚠️ Ошибка расчёта: " << e.what() << "\n";
                 }
             });
             currentScreen = std::move(screen);
@@ -104,7 +103,6 @@ void Game::run() {
 
             if (topPanel) {
                 topPanel->handleEvent(event, mousePos);
-                // 🔑 ГЛАВНОЕ ИСПРАВЛЕНИЕ: отслеживаем клик по вкладке
                 if (topPanel->getActiveTab() != lastActiveTab) {
                     lastActiveTab = topPanel->getActiveTab();
                     switchBuilderScreen(lastActiveTab);

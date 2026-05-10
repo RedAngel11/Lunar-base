@@ -1,27 +1,28 @@
-// src/ui/Hotspot.cpp
 #include "Hotspot.h"
 
-Hotspot::Hotspot(const sf::Font& f, const LocationInfo& data, float radius)
-    : font(f), info(data), name(data.name) {  // Копируем name отдельно для удобства
+Hotspot::Hotspot(const sf::Font& f, const LocationInfo& data, float radius, sf::Vector2u mSize)
+    : font(f), info(data), name(data.name), mapSize(mSize) {
+
+    float pixelX = info.relX * static_cast<float>(mapSize.x);
+    float pixelY = info.relY * static_cast<float>(mapSize.y);
 
     shape.setRadius(radius);
     shape.setOrigin(radius, radius);
-    shape.setPosition(static_cast<float>(info.hotspotX), static_cast<float>(info.hotspotY));
+    shape.setPosition(pixelX, pixelY); // Жёстко привязано к текстуре
     shape.setFillColor(sf::Color(100, 150, 255, 180));
     shape.setOutlineThickness(2);
     shape.setOutlineColor(sf::Color::White);
 
     tooltip.setFont(font);
-    tooltip.setString(sf::String(L"📍 ") + sf::String(name));
+    tooltip.setString(sf::String(L" ") + sf::String(name));
     tooltip.setCharacterSize(14);
     tooltip.setFillColor(sf::Color::White);
     tooltip.setOutlineColor(sf::Color::Black);
     tooltip.setOutlineThickness(1);
 }
 
-void Hotspot::handleEvent(const sf::Event& ev, const sf::Vector2i& mouse) {
-    sf::Vector2f m(static_cast<float>(mouse.x), static_cast<float>(mouse.y));
-    bool inside = shape.getGlobalBounds().contains(m);
+void Hotspot::handleEvent(const sf::Event& ev, const sf::Vector2f& mouseInLocalSpace) {
+    bool inside = shape.getGlobalBounds().contains(mouseInLocalSpace);
 
     if (ev.type == sf::Event::MouseMoved) {
         isHovered = inside;
@@ -30,14 +31,15 @@ void Hotspot::handleEvent(const sf::Event& ev, const sf::Vector2i& mouse) {
         if (isHovered) {
             sf::FloatRect bounds = tooltip.getLocalBounds();
             tooltip.setOrigin(bounds.left + bounds.width/2, bounds.top + bounds.height/2);
-            tooltip.setPosition(static_cast<float>(info.hotspotX), static_cast<float>(info.hotspotY - 30));
+            // Тултип позиционируется в локальных координатах (трансформ применится при draw)
+            tooltip.setPosition(shape.getPosition().x, shape.getPosition().y - 30.0f);
         }
     }
 }
 
-void Hotspot::draw(sf::RenderTarget& target) const {
-    target.draw(shape);
-    if (isHovered) target.draw(tooltip);
+void Hotspot::draw(sf::RenderTarget& target, const sf::Transform& transform) const {
+    target.draw(shape, transform);
+    if (isHovered) target.draw(tooltip, transform);
 }
 
 bool Hotspot::isClicked() const { return isHovered; }

@@ -38,7 +38,14 @@ add_executable(Lunar_base main.cpp
         src/ui/Hotspot.cpp
         src/ui/SelectionButton.h
         src/screens/SummaryScreen.h
-        src/screens/SummaryScreen.cpp)
+        src/screens/SummaryScreen.cpp
+        src/core/CalculationReport.h
+        src/core/CostCalculator.cpp
+        src/core/CostCalculator.h
+        src/core/BaseCalculator.h
+        src/core/BaseCalculator.cpp
+        src/screens/ResultsScreen.h
+        src/screens/ResultsScreen.cpp)
 
 # Линкуем библиотеки SFML
 target_link_libraries(Lunar_base
