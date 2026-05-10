@@ -3,7 +3,6 @@
 SummaryScreen::SummaryScreen(const sf::Font& f, SelectionData& sharedData)
     : font(f), data(sharedData) {
 
-    // 🔑 Порядок: (текст, шрифт, размер)
     headerText.setFont(font);
     headerText.setString(sf::String(L"📋 Итоговая конфигурация"));
     headerText.setCharacterSize(26);
@@ -46,16 +45,12 @@ void SummaryScreen::handleInput(const sf::Event& ev, const sf::Vector2i& mousePo
 }
 
 void SummaryScreen::draw(sf::RenderTarget& target) const {
-    // 🔑 Собираем строки через sf::String, избегаем конфликта std::string / wchar_t
+    // Формируем текст из sharedData
     sf::String locStr = L"🌍 Локация: ";
     if (data.selectedLocation) {
         locStr += sf::String(data.selectedLocation->name);
         locStr += sf::String(L"\n   ☢️ Радиация: ") + std::to_wstring(data.selectedLocation->radiationLevel) + L" Зв/год";
-        locStr += sf::String(L"\n   🌡️ Температура: ") + std::to_wstring(data.selectedLocation->temperatureMin) + L"°C ... " + std::to_wstring(data.selectedLocation->temperatureMax) + L"°C";
-        locStr += sf::String(L"\n   🪨 Стабильность грунта: ") + std::to_wstring(data.selectedLocation->groundStability * 100.0) + L"%";
-    } else {
-        locStr += L"❌ Не выбрано";
-    }
+    } else locStr += L"❌ Не выбрано";
 
     sf::String strucStr = L"🏗️ Структура: ";
     if (data.selectedStructure) {
@@ -66,26 +61,13 @@ void SummaryScreen::draw(sf::RenderTarget& target) const {
             case StructureType::RegolithPrinted: strucStr += L"3D-печать из реголита"; break;
             default: strucStr += L"Неизвестно"; break;
         }
-    } else {
-        strucStr += L"❌ Не выбрано";
-    }
+    } else strucStr += L"❌ Не выбрано";
 
     sf::String matsStr = L"🧱 Материалы: ";
     if (!data.selectedMaterials.empty()) {
-        for (auto m : data.selectedMaterials) {
-            switch (m) {
-                case MaterialType::RegolithConcrete: matsStr += L"Реголитовый бетон, "; break;
-                case MaterialType::Aerogel: matsStr += L"Аэрогель, "; break;
-                case MaterialType::TitaniumAlloy: matsStr += L"Титановый сплав, "; break;
-                case MaterialType::PolymerFoam: matsStr += L"Полимерная пена, "; break;
-                default: break;
-            }
-        }
-    } else {
-        matsStr += L"❌ Не выбрано";
-    }
+        matsStr += L"Выбрано: " + std::to_wstring(data.selectedMaterials.size()) + L" материал(ов)";
+    } else matsStr += L"❌ Не выбрано";
 
-    // 🔑 mutable позволяет вызывать setString в const-методе
     locationInfo.setString(locStr);
     structureInfo.setString(strucStr);
     materialsInfo.setString(matsStr);

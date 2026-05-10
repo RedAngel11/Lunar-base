@@ -11,7 +11,6 @@ class SummaryScreen : public IScreen {
     sf::Font const& font;
     SelectionData const& data;
 
-    // 🔑 mutable разрешает менять текст внутри const-метода draw()
     mutable sf::Text headerText, locationInfo, structureInfo, materialsInfo;
     std::unique_ptr<Button> calculateButton;
     std::function<void()> onCalculateCallback;

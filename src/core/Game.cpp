@@ -9,8 +9,6 @@
 #include <iostream>
 #include <filesystem>
 
-
-
 Game::Game() : window(sf::VideoMode(800, 600), "Lunar Base Simulator") {
     loadResources();
     switchScreen(ScreenType::MainMenu);
@@ -41,10 +39,36 @@ void Game::switchBuilderScreen(Tab tab) {
             currentScreen = std::move(screen);
             break;
         }
-        case Tab::Material:
-        case Tab::Summary:
-            // Заглушки, пока не создашь экраны
+        case Tab::Material: {  // 🔑 НОВОЕ: создаём экран материалов
+            auto screen = std::make_unique<MaterialScreen>(font);
+            screen->setOnSelectCallback([this](MaterialType type) {
+                // Добавляем/удаляем материал из списка (можно сделать тоггл)
+                auto it = std::find(sharedData.selectedMaterials.begin(),
+                                   sharedData.selectedMaterials.end(), type);
+                if (it != sharedData.selectedMaterials.end()) {
+                    sharedData.selectedMaterials.erase(it);
+                } else {
+                    sharedData.selectedMaterials.push_back(type);
+                }
+                std::cout << "✓ Материал обновлён, всего выбрано: "
+                          << sharedData.selectedMaterials.size() << "\n";
+            });
+            currentScreen = std::move(screen);
             break;
+        }
+        case Tab::Summary: {  // 🔑 НОВОЕ: создаём экран итогов
+            auto screen = std::make_unique<SummaryScreen>(font, sharedData);
+            screen->setOnCalculateCallback([this]() {
+                if (sharedData.isReady()) {
+                    std::cout << "🎯 Все данные собраны! Запускаем BaseCalculator...\n";
+                    // Здесь будет вызов BaseCalculator::calculate(sharedData)
+                } else {
+                    std::cout << "⚠️ Заполните все вкладки перед расчётом!\n";
+                }
+            });
+            currentScreen = std::move(screen);
+            break;
+        }
     }
 }
 
