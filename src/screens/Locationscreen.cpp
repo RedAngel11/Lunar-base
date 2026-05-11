@@ -15,18 +15,27 @@ LocationScreen::LocationScreen(const sf::Font& f, const std::string& mapPath) : 
                                  300.f - (size.y * mapScale) / 2.f);
     }
 
-    // 10 ЛОКАЦИЙ (Названия на английском + координаты)
     std::vector<LocationInfo> locations = {
-        { "Oceanus Procellarum", 1.3, -175, 110, 0.80, 0.15f, 0.50f },
-        { "Mare Tranquillitatis", 1.2, -170, 120, 0.85, 0.62f, 0.38f },
-        { "Tycho Crater", 1.1, -190, 110, 0.88, 0.60f, 0.75f },
-        { "Shackleton Crater", 0.8, -230,  40, 0.92, 0.50f, 0.92f },
-        { "Lunar Highlands", 1.5, -180, 130, 0.70, 0.75f, 0.55f },
-        { "Mare Imbrium", 1.4, -180, 115, 0.75, 0.35f, 0.30f },
-        { "Mare Serenitatis", 1.1, -170, 125, 0.82, 0.55f, 0.35f },
-        { "Copernicus Crater", 1.0, -190, 120, 0.85, 0.40f, 0.50f },
-        { "Apennine Mtns", 1.6, -180, 135, 0.65, 0.50f, 0.45f },
-        { "Taurus-Littrow", 1.2, -190, 115, 0.88, 0.65f, 0.42f }
+        { "Oceanus Procellarum",  1.3, -175, 110, 0.80, 0.15f, 0.50f }, // Океан Бурь
+        { "Aristarchus Crater",   1.1, -185, 120, 0.85, 0.22f, 0.42f }, // Кратер Аристарх
+        { "Grimaldi Basin",       1.4, -170, 100, 0.75, 0.20f, 0.65f }, // Бассейн Гримальди
+        { "Mare Frigoris",        1.2, -190, 100, 0.78, 0.55f, 0.18f }, // Море Холода
+        { "Mare Imbrium",         1.3, -175, 115, 0.82, 0.35f, 0.30f }, // Море Дождей
+        { "Plato Crater",         1.0, -180, 110, 0.88, 0.45f, 0.22f }, // Кратер Платон
+        { "Mare Vaporum",         1.3, -180, 125, 0.80, 0.50f, 0.35f }, // Море Паров
+        { "Mare Serenitatis",     1.1, -170, 125, 0.85, 0.68f, 0.28f }, // Море Ясности
+        { "Mare Crisium",         1.2, -165, 115, 0.83, 0.82f, 0.30f }, // Море Кризисов
+        { "Apennine Mountains",   1.5, -175, 130, 0.70, 0.55f, 0.42f }, // Апеннины
+        { "Mare Tranquillitatis", 1.2, -170, 120, 0.85, 0.75f, 0.45f }, // Море Спокойствия
+        { "Taurus-Littrow",       1.2, -190, 115, 0.88, 0.70f, 0.50f }, // Долина Таура-Литтроу
+        { "Mare Fecunditatis",    1.2, -165, 115, 0.83, 0.80f, 0.55f }, // Море Изобилия
+        { "Mare Nectaris",        1.1, -175, 120, 0.84, 0.72f, 0.62f }, // Море Нектара
+        { "Mare Australe",        1.3, -180, 110, 0.78, 0.78f, 0.82f }, // Южное Море
+        { "Tycho Crater",         1.1, -190, 110, 0.88, 0.62f, 0.78f }, // Кратер Тихо
+        { "Shackleton Crater",    0.8, -230,  40, 0.92, 0.50f, 0.90f }, // Кратер Шеклтон
+        { "Mare Nubium",          1.2, -172, 120, 0.82, 0.45f, 0.68f }, // Море Облаков
+        { "Mare Humorum",         1.2, -175, 125, 0.80, 0.35f, 0.75f }, // Море Влажности
+        { "Copernicus Crater",    1.0, -185, 115, 0.86, 0.38f, 0.48f }  // Кратер Коперник
     };
 
     sf::Vector2u texSize = moonTexture.getSize();

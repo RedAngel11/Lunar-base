@@ -25,7 +25,7 @@ std::wstring formatWNumber(double value) {
 ResultsScreen::ResultsScreen(const sf::Font& f, const CalculationReport& rep)
     : font(f), report(rep) {
 
-    if (resultTexture.loadFromFile("resources/cat.jpg")) {
+    if (resultTexture.loadFromFile("resources/dog.jpg")) {
         resultImage.setTexture(resultTexture);
         if (resultTexture.getSize().x > 220) {
             float scale = 250.0f / resultTexture.getSize().x;

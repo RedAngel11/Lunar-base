@@ -35,6 +35,7 @@ MainMenuScreen::MainMenuScreen(const sf::Font& font, const std::string& bgPath) 
         sf::Vector2f(300, 300),
         sf::Vector2f(200, 50)
     );
+    startButton->setColors(sf::Color::Black, sf::Color(40, 40, 40), sf::Color(20, 20, 20));
 }
 
 void MainMenuScreen::setOnStartCallback(std::function<void()> callback) {

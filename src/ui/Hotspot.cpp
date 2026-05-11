@@ -9,7 +9,9 @@ Hotspot::Hotspot(const sf::Font& f, const LocationInfo& data, float radius, sf::
     shape.setRadius(radius);
     shape.setOrigin(radius, radius);
     shape.setPosition(pixelX, pixelY); // Жёстко привязано к текстуре
-    shape.setFillColor(sf::Color(100, 150, 255, 180));
+
+    shape.setFillColor(sf::Color(20, 40, 100, 200));
+
     shape.setOutlineThickness(2);
     shape.setOutlineColor(sf::Color::White);
 
@@ -26,7 +28,7 @@ void Hotspot::handleEvent(const sf::Event& ev, const sf::Vector2f& mouseInLocalS
 
     if (ev.type == sf::Event::MouseMoved) {
         isHovered = inside;
-        shape.setFillColor(isHovered ? sf::Color(150, 200, 255, 220) : sf::Color(100, 150, 255, 180));
+        shape.setFillColor(isHovered ? sf::Color(80, 160, 255, 230) : sf::Color(20, 40, 100, 200));
 
         if (isHovered) {
             sf::FloatRect bounds = tooltip.getLocalBounds();
@@ -43,4 +45,4 @@ void Hotspot::draw(sf::RenderTarget& target, const sf::Transform& transform) con
 }
 
 bool Hotspot::isClicked() const { return isHovered; }
-void Hotspot::resetClick() { isHovered = false; shape.setFillColor(sf::Color(100, 150, 255, 180)); }
+void Hotspot::resetClick() { isHovered = false; shape.setFillColor(sf::Color(20, 40, 100, 200)); }
