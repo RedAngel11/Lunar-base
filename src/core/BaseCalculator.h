@@ -13,6 +13,7 @@ public:
     };
 
     static CalculationReport calculate(const SelectionData& data);
+    static MaterialProps getCustomMaterialProps(const CustomMaterialParams& p);
 private:
     static MaterialProps getMaterialProps(MaterialType type);
 };

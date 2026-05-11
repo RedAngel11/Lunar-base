@@ -36,18 +36,34 @@ void Game::switchBuilderScreen(Tab tab) {
         }
         case Tab::Structure: {
             auto screen = std::make_unique<StructureScreen>(font);
-            screen->setOnSelectCallback([this](StructureType type) {
-                sharedData.selectedStructure = type;
+            screen->setOnSelectCallback([this](const StructureParams& p) {
+                sharedData.structureParams = p;
+                sharedData.selectedStructure = p.type; // 🔑 СИНХРОНИЗАЦИЯ: обновляем enum
+
+                // Вывод в консоль с названием типа
+                std::string typeName = "Unknown";
+                switch (p.type) {
+                    case StructureType::SealedModule: typeName = "Sealed Module"; break;
+                    case StructureType::UndergroundBunker: typeName = "Underground Bunker"; break;
+                    case StructureType::InflatableDome: typeName = "Inflatable Dome"; break;
+                    case StructureType::RegolithPrinted: typeName = "3D-Printed Regolith"; break;
+                }
+                std::cout << "🏗️ Structure Updated: " << typeName
+                          << " | Volume=" << p.compartmentVolumes[0]
+                          << " | Walls=" << p.wallThickness << "m\n";
             });
             currentScreen = std::move(screen);
             break;
         }
         case Tab::Material: {
             auto screen = std::make_unique<MaterialScreen>(font);
-            screen->setOnSelectCallback([this](MaterialType type) {
-                auto it = std::find(sharedData.selectedMaterials.begin(), sharedData.selectedMaterials.end(), type);
-                if (it != sharedData.selectedMaterials.end()) sharedData.selectedMaterials.erase(it);
-                else sharedData.selectedMaterials.push_back(type);
+            screen->setOnSelectCallback([this, &screenRef = *screen](MaterialType type) {
+                sharedData.selectedMaterials.clear();
+                sharedData.selectedMaterials.push_back(type);
+                if (type == MaterialType::None) {
+                    sharedData.customMat = screenRef.getCustomParams();
+                    std::cout << "Custom material applied\n";
+                }
             });
             currentScreen = std::move(screen);
             break;

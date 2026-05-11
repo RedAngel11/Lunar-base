@@ -15,18 +15,22 @@ LocationScreen::LocationScreen(const sf::Font& f, const std::string& mapPath) : 
                                  300.f - (size.y * mapScale) / 2.f);
     }
 
-    // Координаты точек (relX, relY от 0.0 до 1.0)
+    // 10 ЛОКАЦИЙ (Названия на английском + координаты)
     std::vector<LocationInfo> locations = {
-        { "Океан Бурь",         1.3, -175, 110, 0.80, 0.15f, 0.50f },
-        { "Море Спокойствия",   1.2, -170, 120, 0.85, 0.62f, 0.38f },
-        { "Кратер Тихо",        1.1, -190, 110, 0.88, 0.60f, 0.75f },
-        { "Кратер Шеклтон",     0.8, -230,  40, 0.92, 0.50f, 0.92f },
-        { "Возвышенности",      1.5, -180, 130, 0.70, 0.75f, 0.55f }
+        { "Oceanus Procellarum", 1.3, -175, 110, 0.80, 0.15f, 0.50f },
+        { "Mare Tranquillitatis", 1.2, -170, 120, 0.85, 0.62f, 0.38f },
+        { "Tycho Crater", 1.1, -190, 110, 0.88, 0.60f, 0.75f },
+        { "Shackleton Crater", 0.8, -230,  40, 0.92, 0.50f, 0.92f },
+        { "Lunar Highlands", 1.5, -180, 130, 0.70, 0.75f, 0.55f },
+        { "Mare Imbrium", 1.4, -180, 115, 0.75, 0.35f, 0.30f },
+        { "Mare Serenitatis", 1.1, -170, 125, 0.82, 0.55f, 0.35f },
+        { "Copernicus Crater", 1.0, -190, 120, 0.85, 0.40f, 0.50f },
+        { "Apennine Mtns", 1.6, -180, 135, 0.65, 0.50f, 0.45f },
+        { "Taurus-Littrow", 1.2, -190, 115, 0.88, 0.65f, 0.42f }
     };
 
     sf::Vector2u texSize = moonTexture.getSize();
     for (const auto& loc : locations) {
-        // Радиус 25px в координатах текстуры
         hotspots.push_back(std::make_unique<Hotspot>(font, loc, 25.0f, texSize));
     }
 
@@ -36,38 +40,33 @@ LocationScreen::LocationScreen(const sf::Font& f, const std::string& mapPath) : 
     infoPanel.setPosition(20, 520);
 }
 
-void LocationScreen::setOnSelectCallback(std::function<void(const LocationInfo&)> cb) {
-    onSelectCallback = std::move(cb);
-}
-
 void LocationScreen::handleInput(const sf::Event& ev, const sf::Vector2i& mousePos) {
     sf::Vector2f mouse(mousePos.x, mousePos.y);
 
-    // 🔑 ЗУМ КОЛЁСИКОМ (Исправлено!)
     if (ev.type == sf::Event::MouseWheelScrolled) {
         float zoomFactor = ev.mouseWheelScroll.delta > 0 ? 1.15f : 1.0f / 1.15f;
         mapScale *= zoomFactor;
-        // Ограничиваем зум от 0.15x до 4.0x
         mapScale = std::clamp(mapScale, 0.15f, 4.0f);
-
-        // Корректируем смещение, чтобы зум шёл к центру окна (400, 300)
         mapOffset = sf::Vector2f(400.f, 300.f) - (mapOffset - sf::Vector2f(400.f, 300.f)) * zoomFactor;
     }
 
-    // 🔑 ПЕРЕТАСКИВАНИЕ
     if (ev.type == sf::Event::MouseButtonPressed && ev.mouseButton.button == sf::Mouse::Left) {
-        isDragging = true;
-        dragStartMouse = mouse;
-        dragStartOffset = mapOffset;
+        isDragging = true; dragStartMouse = mouse; dragStartOffset = mapOffset;
     }
-    if (ev.type == sf::Event::MouseButtonReleased) {
-        isDragging = false;
-    }
+    if (ev.type == sf::Event::MouseButtonReleased) isDragging = false;
+
     if (isDragging && ev.type == sf::Event::MouseMoved) {
         mapOffset += (mouse - dragStartMouse);
+
+        // 🔑 ГРАНИЦЫ КАРТЫ (Не даем карте улететь в бесконечность)
+        float mapW = moonTexture.getSize().x * mapScale;
+        float mapH = moonTexture.getSize().y * mapScale;
+
+        // Ограничиваем смещение, чтобы карта не выходила за окно больше чем на 50px
+        mapOffset.x = std::clamp(mapOffset.x, 400.f - mapW + 50.f, 400.f - 50.f);
+        mapOffset.y = std::clamp(mapOffset.y, 300.f - mapH + 50.f, 300.f - 50.f);
     }
 
-    // 🔑 СОЗДАЁМ ТРАНСФОРМ (Сдвиг + Масштаб относительно центра)
     sf::Transform t;
     t.translate(mapOffset);
     // 🔑 ИСПРАВЛЕНИЕ: scale(float scaleX, float scaleY, float centerX, float centerY)
@@ -88,6 +87,28 @@ void LocationScreen::handleInput(const sf::Event& ev, const sf::Vector2i& mouseP
         }
     }
 }
+
+void LocationScreen::setOnSelectCallback(std::function<void(const LocationInfo&)> cb) {
+    onSelectCallback = std::move(cb);
+}
+
+
+    // 🔑 ПЕРЕТАСКИВАНИЕ
+    // if (ev.type == sf::Event::MouseButtonPressed && ev.mouseButton.button == sf::Mouse::Left) {
+    //     isDragging = true;
+    //     dragStartMouse = mouse;
+    //     dragStartOffset = mapOffset;
+    // }
+    // if (ev.type == sf::Event::MouseButtonReleased) {
+    //     isDragging = false;
+    // }
+    // if (isDragging && ev.type == sf::Event::MouseMoved) {
+    //     mapOffset += (mouse - dragStartMouse);
+    // }
+
+    // 🔑 СОЗДАЁМ ТРАНСФОРМ (Сдвиг + Масштаб относительно центра)
+
+
 
 void LocationScreen::draw(sf::RenderTarget& target) const {
     sf::Transform t;

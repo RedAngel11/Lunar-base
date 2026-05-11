@@ -12,7 +12,10 @@ class ResultsScreen : public IScreen {
     CalculationReport const& report;
     std::unique_ptr<Button> backButton;
     std::vector<sf::Text> textLines;
-    
+
+    sf::Sprite resultImage;
+    sf::Texture resultTexture;
+
     std::function<void()> onBackCallback;
 
     void buildTextLines();

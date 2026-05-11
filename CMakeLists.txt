@@ -45,7 +45,9 @@ add_executable(Lunar_base main.cpp
         src/core/BaseCalculator.h
         src/core/BaseCalculator.cpp
         src/screens/ResultsScreen.h
-        src/screens/ResultsScreen.cpp)
+        src/screens/ResultsScreen.cpp
+        src/ui/TextInput.h
+        src/ui/TextInput.cpp)
 
 # Линкуем библиотеки SFML
 target_link_libraries(Lunar_base
