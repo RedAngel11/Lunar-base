@@ -3,35 +3,37 @@
 
 MaterialScreen::MaterialScreen(const sf::Font& f) : font(f) {
     title.setFont(font);
-    title.setString(sf::String(L"Select Construction Material"));
-    title.setCharacterSize(24);
+    title.setString(sf::String(L"Выбор материалов"));
+    title.setCharacterSize(30);
     title.setFillColor(sf::Color::White);
-    title.setPosition(30, 30);
+    sf::FloatRect tb = title.getLocalBounds();
+    title.setOrigin(tb.left + tb.width / 2.0f, tb.top + tb.height / 2.0f);
+    title.setPosition(400.0f, 70.0f);
 
     std::vector<std::pair<sf::String, MaterialType>> options = {
-        {sf::String(L"Regolith Concrete"), MaterialType::RegolithConcrete},
-        {sf::String(L"Aerogel"), MaterialType::Aerogel},
-        {sf::String(L"Titanium Alloy"), MaterialType::TitaniumAlloy},
-        {sf::String(L"Polymer Foam"), MaterialType::PolymerFoam}
+        {sf::String(L"Реголитовый бетон"), MaterialType::RegolithConcrete},
+        {sf::String(L"Аэрогель"), MaterialType::Aerogel},
+        {sf::String(L"Титановый сплав"), MaterialType::TitaniumAlloy},
+        {sf::String(L"Полимерная пена"), MaterialType::PolymerFoam}
     };
 
-    float y = 80;
+    float y = 130;
     for (const auto& [label, type] : options) {
-        materialButtons.push_back({std::make_unique<Button>(font, label, sf::Vector2f(100, y), sf::Vector2f(300, 40)), type});
+        // 🔑 Центрируем кнопки
+        materialButtons.push_back({std::make_unique<Button>(font, label, sf::Vector2f(250, y), sf::Vector2f(300, 40)), type});
         y += 50;
     }
 
-    customBtn = std::make_unique<Button>(font, sf::String(L"Custom Material"), sf::Vector2f(100, y), sf::Vector2f(300, 40));
-    y += 50;
+    customBtn = std::make_unique<Button>(font, sf::String(L"РАЗРАБОТАТЬ СВОЙ МАТЕРИАЛ"), sf::Vector2f(250, y), sf::Vector2f(300, 40));
+    y += 60;
 
-    customInputs.push_back(std::make_unique<TextInput>(font, L"Density (kg/m3)", sf::Vector2f(100, y), sf::Vector2f(140, 25)));
-    customInputs.push_back(std::make_unique<TextInput>(font, L"Conductivity", sf::Vector2f(250, y), sf::Vector2f(140, 25)));
-    y += 35;
-    customInputs.push_back(std::make_unique<TextInput>(font, L"Shielding Factor", sf::Vector2f(100, y), sf::Vector2f(140, 25)));
-    customInputs.push_back(std::make_unique<TextInput>(font, L"Durability (years)", sf::Vector2f(250, y), sf::Vector2f(140, 25)));
-    y += 35;
-    customInputs.push_back(std::make_unique<TextInput>(font, L"In-Situ Factor", sf::Vector2f(100, y), sf::Vector2f(140, 25)));
-    customInputs.push_back(std::make_unique<TextInput>(font, L"Dev Time (years)", sf::Vector2f(250, y), sf::Vector2f(140, 25)));
+    // 🔑 Поля для кастомного материала тоже по центру
+    customInputs.push_back(std::make_unique<TextInput>(font, L"Плотность (кг/м3)", sf::Vector2f(250, y), sf::Vector2f(300, 28)));
+    customInputs.push_back(std::make_unique<TextInput>(font, L"Теплопроводность", sf::Vector2f(250, y + 38), sf::Vector2f(300, 28)));
+    customInputs.push_back(std::make_unique<TextInput>(font, L"Защита от радиации", sf::Vector2f(250, y + 76), sf::Vector2f(300, 28)));
+    customInputs.push_back(std::make_unique<TextInput>(font, L"Срок службы (лет)", sf::Vector2f(250, y + 114), sf::Vector2f(300, 28)));
+    customInputs.push_back(std::make_unique<TextInput>(font, L"Доля синтеза на Луне", sf::Vector2f(250, y + 152), sf::Vector2f(300, 28)));
+    customInputs.push_back(std::make_unique<TextInput>(font, L"Время разработки (лет)", sf::Vector2f(250, y + 190), sf::Vector2f(300, 28)));
 
     for (auto& inp : customInputs) inp->setText(L"1.0");
 }
