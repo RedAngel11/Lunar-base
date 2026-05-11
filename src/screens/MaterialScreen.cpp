@@ -19,7 +19,6 @@ MaterialScreen::MaterialScreen(const sf::Font& f) : font(f) {
 
     float y = 130;
     for (const auto& [label, type] : options) {
-        // 🔑 Центрируем кнопки
         materialButtons.push_back({std::make_unique<Button>(font, label, sf::Vector2f(250, y), sf::Vector2f(300, 40)), type});
         y += 50;
     }
@@ -27,7 +26,6 @@ MaterialScreen::MaterialScreen(const sf::Font& f) : font(f) {
     customBtn = std::make_unique<Button>(font, sf::String(L"РАЗРАБОТАТЬ СВОЙ МАТЕРИАЛ"), sf::Vector2f(250, y), sf::Vector2f(300, 40));
     y += 60;
 
-    // 🔑 Поля для кастомного материала тоже по центру
     customInputs.push_back(std::make_unique<TextInput>(font, L"Плотность (кг/м3)", sf::Vector2f(250, y), sf::Vector2f(300, 28)));
     customInputs.push_back(std::make_unique<TextInput>(font, L"Теплопроводность", sf::Vector2f(250, y + 38), sf::Vector2f(300, 28)));
     customInputs.push_back(std::make_unique<TextInput>(font, L"Защита от радиации", sf::Vector2f(250, y + 76), sf::Vector2f(300, 28)));

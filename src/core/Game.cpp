@@ -23,13 +23,12 @@ void Game::loadResources() {
 
 
 void Game::switchBuilderScreen(Tab tab) {
-    std::cout << "🔄 Переключение на вкладку: " << static_cast<int>(tab) << "\n";
-
     switch (tab) {
         case Tab::Location: {
             auto screen = std::make_unique<LocationScreen>(font, "resources/moon_map.jpg");
             screen->setOnSelectCallback([this](const LocationInfo& info) {
                 sharedData.selectedLocation = info;
+                std::cout << "🌍 Выбрана локация: " << info.name << "\n";
             });
             currentScreen = std::move(screen);
             break;
@@ -38,31 +37,41 @@ void Game::switchBuilderScreen(Tab tab) {
             auto screen = std::make_unique<StructureScreen>(font);
             screen->setOnSelectCallback([this](const StructureParams& p) {
                 sharedData.structureParams = p;
-                sharedData.selectedStructure = p.type; // 🔑 СИНХРОНИЗАЦИЯ: обновляем enum
+                sharedData.selectedStructure = p.type;
 
-                // Вывод в консоль с названием типа
                 std::string typeName = "Unknown";
                 switch (p.type) {
-                    case StructureType::SealedModule: typeName = "Sealed Module"; break;
-                    case StructureType::UndergroundBunker: typeName = "Underground Bunker"; break;
-                    case StructureType::InflatableDome: typeName = "Inflatable Dome"; break;
-                    case StructureType::RegolithPrinted: typeName = "3D-Printed Regolith"; break;
+                    case StructureType::SealedModule: typeName = "Герметичный модуль"; break;
+                    case StructureType::UndergroundBunker: typeName = "Подземный бункер"; break;
+                    case StructureType::InflatableDome: typeName = "Надувной купол"; break;
+                    case StructureType::RegolithPrinted: typeName = "3D-печать из реголита"; break;
                 }
-                std::cout << "🏗️ Structure Updated: " << typeName
-                          << " | Volume=" << p.compartmentVolumes[0]
-                          << " | Walls=" << p.wallThickness << "m\n";
+                std::cout << "🏗️ Структура: " << typeName
+                          << " | Объём=" << p.compartmentVolumes[0]
+                          << " | Стенка=" << p.wallThickness << "м\n";
             });
             currentScreen = std::move(screen);
             break;
         }
         case Tab::Material: {
             auto screen = std::make_unique<MaterialScreen>(font);
-            screen->setOnSelectCallback([this, &screenRef = *screen](MaterialType type) {
+            // 🔑 Безопасный захват: сохраняем сырой указатель до перемещения unique_ptr
+            auto* screenPtr = screen.get();
+            screen->setOnSelectCallback([this, screenPtr](MaterialType type) {
                 sharedData.selectedMaterials.clear();
                 sharedData.selectedMaterials.push_back(type);
-                if (type == MaterialType::None) {
-                    sharedData.customMat = screenRef.getCustomParams();
-                    std::cout << "Custom material applied\n";
+
+                std::string matName = "Неизвестно";
+                if (type == MaterialType::RegolithConcrete) matName = "Реголитовый бетон";
+                else if (type == MaterialType::Aerogel) matName = "Аэрогель";
+                else if (type == MaterialType::TitaniumAlloy) matName = "Титановый сплав";
+                else if (type == MaterialType::PolymerFoam) matName = "Полимерная пена";
+                else if (type == MaterialType::None) matName = "Пользовательский материал";
+
+                std::cout << "🧱 Выбран материал: " << matName << "\n";
+
+                if (type == MaterialType::None && screenPtr) {
+                    sharedData.customMat = screenPtr->getCustomParams();
                 }
             });
             currentScreen = std::move(screen);
@@ -74,11 +83,16 @@ void Game::switchBuilderScreen(Tab tab) {
                 try {
                     CalculationReport report = BaseCalculator::calculate(sharedData);
                     auto results = std::make_unique<ResultsScreen>(font, report);
-                    results->setOnBackCallback([this]() { switchScreen(ScreenType::Builder); });
+
+                    // 🔑 ВОЗВРАТ В ГЛАВНОЕ МЕНЮ
+                    results->setOnBackCallback([this]() {
+                        switchScreen(ScreenType::MainMenu);
+                    });
+
                     currentScreen = std::move(results);
-                    topPanel = nullptr; // Скрываем панель на экране результатов
+                    topPanel = nullptr;
                 } catch (const std::exception& e) {
-                    std::cerr << "⚠️ Ошибка расчёта: " << e.what() << "\n";
+                    std::cerr << "Ошибка расчёта: " << e.what() << "\n";
                 }
             });
             currentScreen = std::move(screen);

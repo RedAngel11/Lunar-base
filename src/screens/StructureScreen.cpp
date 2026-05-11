@@ -6,12 +6,11 @@
 StructureScreen::StructureScreen(const sf::Font& f) : font(f) {
     title.setFont(font);
     title.setString(sf::String(L"Конфигурация базы"));
-    title.setCharacterSize(30); // 🔑 Увеличили шрифт
+    title.setCharacterSize(30);
     title.setFillColor(sf::Color::White);
-    // 🔑 Центрируем заголовок
     sf::FloatRect tb = title.getLocalBounds();
     title.setOrigin(tb.left + tb.width / 2.0f, tb.top + tb.height / 2.0f);
-    title.setPosition(400.0f, 70.0f); // 🔑 Сдвинули ниже панели
+    title.setPosition(400.0f, 70.0f);
 
     // Кнопки типов структуры (по центру)
     std::vector<sf::String> typeNames = {
@@ -20,21 +19,14 @@ StructureScreen::StructureScreen(const sf::Font& f) : font(f) {
         sf::String(L"Надувной купол"),
         sf::String(L"3D-печать из реголита")
     };
-    std::vector<StructureType> typeEnums = {
-        StructureType::SealedModule,
-        StructureType::UndergroundBunker,
-        StructureType::InflatableDome,
-        StructureType::RegolithPrinted
-    };
 
     float y = 130;
     for (size_t i = 0; i < typeNames.size(); ++i) {
-        // 🔑 Центрируем кнопки: (800 - 300) / 2 = 250
         auto btn = std::make_unique<Button>(font, typeNames[i], sf::Vector2f(250, y), sf::Vector2f(300, 40));
         typeButtons.push_back(std::move(btn));
         y += 50;
     }
-    selectedType = StructureType::SealedModule;
+    selectedType = StructureType::SealedModule; // По умолчанию первый тип
 
     // Подписи и поля ввода
     std::vector<sf::String> labelTexts = {
@@ -49,17 +41,14 @@ StructureScreen::StructureScreen(const sf::Font& f) : font(f) {
         sf::Text lbl;
         lbl.setFont(font);
         lbl.setString(labelTexts[i]);
-        lbl.setCharacterSize(18); // 🔑 Чуть крупнее подписи
+        lbl.setCharacterSize(18);
         lbl.setFillColor(sf::Color(220, 220, 220));
 
-        // 🔑 Выравниваем подписи справа от центра
         sf::FloatRect bounds = lbl.getLocalBounds();
         lbl.setOrigin(bounds.left + bounds.width, bounds.top + bounds.height / 2.0f);
-        lbl.setPosition(240, y); // Правый край у X=240
+        lbl.setPosition(240, y);
 
         labels.push_back(lbl);
-
-        // 🔑 Поля ввода по центру, чуть правее
         inputs.push_back(std::make_unique<TextInput>(font, L"", sf::Vector2f(260, y - 14), sf::Vector2f(200, 28)));
         y += 40;
     }
@@ -75,10 +64,16 @@ void StructureScreen::setOnSelectCallback(std::function<void(const StructurePara
 }
 
 void StructureScreen::handleInput(const sf::Event& ev, const sf::Vector2i& mousePos) {
+    // 🔑 ИСПРАВЛЕНИЕ: Явное сопоставление индекса кнопки и типа структуры
     for (size_t i = 0; i < typeButtons.size(); ++i) {
         typeButtons[i]->handleEvent(ev, mousePos);
         if (typeButtons[i]->isClicked()) {
-            selectedType = static_cast<StructureType>(i);
+            switch (i) {
+                case 0: selectedType = StructureType::SealedModule; break;
+                case 1: selectedType = StructureType::UndergroundBunker; break;
+                case 2: selectedType = StructureType::InflatableDome; break;
+                case 3: selectedType = StructureType::RegolithPrinted; break;
+            }
             typeButtons[i]->resetClick();
 
             StructureParams p;
